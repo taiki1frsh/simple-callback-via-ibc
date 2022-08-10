@@ -1,7 +1,7 @@
 [package]
 name = "cw-ibc-example"
 version = "0.1.0"
-authors = ["Zeke Medley <zekemedley@gmail.com>"]
+authors = ["Taiki Furusyo <taiki.furusyo@gmail.com>"]
 edition = "2018"
 
 exclude = [
