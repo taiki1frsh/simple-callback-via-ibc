@@ -1,5 +1,5 @@
 [package]
-name = "cw-ibc-example"
+name = "cw-ibc-callback-example"
 version = "0.1.0"
 authors = ["Taiki Furusyo <taiki.furusyo@gmail.com>"]
 edition = "2018"

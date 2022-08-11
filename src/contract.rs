@@ -9,7 +9,7 @@ use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, GetCountResponse, IbcExecuteMsg, InstantiateMsg, QueryMsg};
 use crate::state::CONNECTION_COUNTS;
 
-const CONTRACT_NAME: &str = "crates.io:cw-ibc-example";
+const CONTRACT_NAME: &str = "crates.io:cw-ibc-callback-example";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[cfg_attr(not(feature = "library"), entry_point)]

@@ -169,7 +169,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "cw-ibc-example"
+name = "cw-ibc-callback-example"
 version = "0.1.0"
 dependencies = [
  "cosmwasm-schema",
