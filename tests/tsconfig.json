@@ -9,7 +9,7 @@
     "inlineSourceMap": true,
     "declaration": true,
     "outDir": "build",
-    "rootDir": "tests",
+    "rootDir": "src",
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
@@ -19,5 +19,5 @@
     "resolveJsonModule": true,
     "pretty": true,
   },
-  "include": ["tests/**/*.ts"]
+  "include": ["src/**/*.ts"]
 }

@@ -1,21 +1,20 @@
 {
-  "name": "ibc-tests-ics20",
+  "name": "ibc-callback-tests",
   "version": "0.1.0",
-  "description": "Simple repo showing how to use ts-relayer as a library to test cw20-ics20 contract",
   "browserslist": [
     "maintained node versions"
   ],
-  "repository": "git@github.com:confio/ibc-tests-ics20.git",
-  "author": "Ethan Frey <ethanfrey@users.noreply.github.com>",
+  "repository": "git@github.com:taiki1frsy/simple-ibc-callbacktaiki.git",
+  "author": "Taiki Furusyo <taiki.furusyo@users.noreply.github.com>",
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"**/*.{ts,md}\" --write",
-    "fix:lint": "eslint tests --ext .ts --fix",
+    "fix:lint": "eslint src --ext .ts --fix",
     "test": "run-s build test:*",
-    "test:lint": "eslint tests --ext .ts",
+    "test:lint": "eslint src --ext .ts",
     "test:prettier": "prettier \"**/*.{ts,md}\" --list-different",
     "test:unit": "nyc --silent ava --serial"
   },
