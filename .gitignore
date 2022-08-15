@@ -19,3 +19,9 @@ schema
 debug.log
 
 node_modules
+
+artifacts
+
+Build
+
+.nyc_output

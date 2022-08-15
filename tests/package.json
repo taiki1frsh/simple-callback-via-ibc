@@ -19,7 +19,8 @@
     "test:unit": "nyc --silent ava --serial"
   },
   "dependencies": {
-    "@confio/relayer": "^0.5.1"
+    "@confio/relayer": "^0.5.1",
+    "@cosmjs/amino": "^0.28.11"
   },
   "devDependencies": {
     "@ava/typescript": "^3.0.1",
