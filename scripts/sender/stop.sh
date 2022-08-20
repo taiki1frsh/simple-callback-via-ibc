@@ -7,5 +7,5 @@ SCRIPT_DIR="$(realpath "$(dirname "$0")")"
 # shellcheck disable=SC1091
 source "$SCRIPT_DIR"/env
 
-echo "Killing gaiad container..."
+echo "Killing Wasmd container..."
 docker container kill "$CONTAINER_NAME"

@@ -2,8 +2,14 @@ import { readFileSync } from "fs";
 
 import { AckWithMetadata, RelayInfo, testutils } from "@confio/relayer";
 import { fromUtf8 } from "@cosmjs/encoding";
+// import { Order } from "cosmjs-types/ibc/core/channel/v1";
 
 const { setupWasmClient } = testutils;
+
+export const cwIbcCallback = {
+  version: 'ibc-callback',
+  ordering: 0,
+};
 
 export async function setupContracts(
   contracts: Record<string, string>

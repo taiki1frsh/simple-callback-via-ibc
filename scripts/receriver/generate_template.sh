@@ -9,7 +9,7 @@ source "$SCRIPT_DIR"/env
 
 mkdir -p "$SCRIPT_DIR"/template
 
-export CHAIN_ID=wasmd-1
+export CHAIN_ID=wasmd-2
 
 # The usage of the accounts below is documented in README.md of this directory
 docker run --rm \
