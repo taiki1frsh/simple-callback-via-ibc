@@ -3,7 +3,9 @@ use std::fs::create_dir_all;
 
 use cosmwasm_schema::{export_schema, remove_schemas, schema_for};
 
-use cw_ibc_callback_example::msg::{ExecuteMsg, InstantiateMsg, QueryMsg, IbcExecuteMsg, GetCountResponse};
+use cw_ibc_callback_example::msg::{
+    ExecuteMsg, GetCountResponse, IbcExecuteMsg, InstantiateMsg, QueryMsg,
+};
 
 fn main() {
     let mut out_dir = current_dir().unwrap();
