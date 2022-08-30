@@ -3,15 +3,15 @@ import { readFileSync } from "fs";
 import { AckWithMetadata, CosmWasmSigner, RelayInfo, testutils } from "@confio/relayer";
 import { fromBase64, fromUtf8 } from "@cosmjs/encoding";
 import { assert } from "@cosmjs/utils";
-import {
-  SimpleIbcCallbackClient,
-  // SimpleIbcCallbackQueryClient
-} from './SimpleIbcCallback.client';
-import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+// import {
+//   SimpleIbcCallbackClient,
+//   // SimpleIbcCallbackQueryClient
+// } from './SimpleIbcCallback.client';
+// import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 
 
 const { fundAccount, generateMnemonic, osmosis: oldOsmo, signingCosmWasmClient, wasmd } = testutils;
-const proto_signing_1 = require("@cosmjs/proto-signing");
+// const proto_signing_1 = require("@cosmjs/proto-signing");
 
 const osmosis = { ...oldOsmo, minFee: "0.025uosmo" };
 
@@ -45,13 +45,14 @@ export async function setupWasmClient(): Promise<CosmWasmSigner> {
   return cosmwasm;
 }
 
-export async function setupContractClient(contractAddr: string): Promise<SimpleIbcCallbackClient> {
-  const mnemonic = generateMnemonic();
-  const wallet = await proto_signing_1.DirectSecp256k1HdWallet.fromMnemonic(mnemonic);
-  const signingCosmWasmClient = await SigningCosmWasmClient.connectWithSigner(wasmd.tendermintUrlHttp, wallet, wasmd);
-  const client = new SimpleIbcCallbackClient(signingCosmWasmClient, mnemonic, contractAddr);
-  return client;
-}
+// export async function setupContractClient(contractAddr: string): Promise<SimpleIbcCallbackClient> {
+//   const mnemonic = generateMnemonic();
+//   const wallet = await proto_signing_1.DirectSecp256k1HdWallet.fromMnemonic(mnemonic);
+//   const signingCosmWasmClient = await SigningCosmWasmClient.connectWithSigner(wasmd.tendermintUrlHttp, wallet, wasmd);
+//   const client = new SimpleIbcCallbackClient(signingCosmWasmClient, mnemonic, contractAddr);
+//   return client;
+// }
+
 // This creates a client for the CosmWasm chain, that can interact with contracts
 export async function setupOsmosisClient(): Promise<CosmWasmSigner> {
   // create apps and fund an account

@@ -107,7 +107,7 @@ pub fn execute_increment(
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_packet_ack(
-    _deps: DepsMut,
+    deps: DepsMut,
     _env: Env,
     ack: IbcPacketAckMsg,
 ) -> Result<IbcBasicResponse, ContractError> {
@@ -115,7 +115,8 @@ pub fn ibc_packet_ack(
     let res: Ack = from_slice(&ack.acknowledgement.data)?;
     match res {
       Ack::Result(_data) => {
-        let res = acknowledge_callback(_deps, _env, Option::Some("none".to_string()));
+        let _ = acknowledge_callback(deps, _env, ack.original_packet.src.channel_id, Option::Some("none".to_string()))?;
+
         Ok(IbcBasicResponse::new())
       }
       Ack::Error(e) => Ok(IbcBasicResponse::new()
@@ -127,13 +128,21 @@ pub fn ibc_packet_ack(
 // receive PacketMsg::Dispatch response
 #[allow(clippy::unnecessary_wraps)]
 fn acknowledge_callback(
-  _deps: DepsMut,
+  deps: DepsMut,
   _env: Env,
+  channel: String,
   _requester: Option<String>,
   //response:
 ) -> Result<IbcBasicResponse, ContractError> {
   println!("Succeeded to do a callback function");
-  Ok(IbcBasicResponse::new())
+  let count = CONNECTION_COUNTS.update(deps.storage, channel.clone(), |count| -> StdResult<_> {
+    Ok(count.unwrap_or_default() + 10)
+  })?;
+
+  Ok(IbcBasicResponse::new()
+    .add_attribute("count", count.to_string())
+    .add_attribute("channel", channel)
+  )
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
