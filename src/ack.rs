@@ -11,8 +11,8 @@ pub enum Ack {
     Error(String),
 }
 
-pub fn make_ack_success() -> Binary {
-    let res = Ack::Result(b"1".into());
+pub fn make_ack_success(count: u32) -> Binary {
+    let res = Ack::Result(to_binary(&count).unwrap());
     to_binary(&res).unwrap()
 }
 

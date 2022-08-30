@@ -61,7 +61,7 @@ inter-block-cache = true
 # ["message.sender", "message.recipient"]
 index-events = []
 
-# IavlCacheSize set the size of the iavl tree cache. 
+# IavlCacheSize set the size of the iavl tree cache.
 # Default cache size is 50mb.
 iavl-cache-size = 781250
 
@@ -209,7 +209,7 @@ snapshot-keep-recent = 2
 ###############################################################################
 
 [osmosis-mempool]
-# This is the max allowed gas any tx. 
+# This is the max allowed gas any tx.
 # This is only for local mempool purposes, and thus	is only ran on check tx.
 max-gas-wanted-per-tx = "25000000"
 

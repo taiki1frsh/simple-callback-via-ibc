@@ -31,12 +31,12 @@ pub fn execute(
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match msg {
-        ExecuteMsg::Increment { channel } => Ok(Response::new()
+        ExecuteMsg::Increment { channel, callback } => Ok(Response::new()
             .add_attribute("method", "execute_increment")
             .add_attribute("channel", channel.clone())
             .add_message(IbcMsg::SendPacket {
                 channel_id: channel,
-                data: to_binary(&IbcExecuteMsg::Increment {})?,
+                data: to_binary(&IbcExecuteMsg::Increment { callback })?,
                 timeout: IbcTimeout::with_timestamp(env.block.time.plus_seconds(300)),
             })),
     }

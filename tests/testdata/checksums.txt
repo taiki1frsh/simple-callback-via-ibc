@@ -1,1 +1,1 @@
-6f1be6dce8bfb8d4bba0f17287af693e3dfea0f244e65d0d96ebd28dbbbc10fb  cw_ibc_callback_example-aarch64.wasm
+e14cf450beeb52ff001af810145e72e53f51f6b39349518f3acbfcecc6ef368d  cw_ibc_callback_example-aarch64.wasm

@@ -3,18 +3,18 @@ use cosmwasm_std::entry_point;
 use cosmwasm_std::{
     from_binary, DepsMut, Env, IbcBasicResponse, IbcChannel, IbcChannelCloseMsg,
     IbcChannelConnectMsg, IbcChannelOpenMsg, IbcOrder, IbcPacketAckMsg, IbcPacketReceiveMsg,
-    IbcPacketTimeoutMsg, IbcReceiveResponse, StdResult,
+    IbcPacketTimeoutMsg, IbcReceiveResponse, StdResult, from_slice,
 };
 
 use crate::{
-    ack::{make_ack_fail, make_ack_success},
+    ack::{make_ack_fail, make_ack_success, Ack},
     error::Never,
     msg::IbcExecuteMsg,
     state::CONNECTION_COUNTS,
     ContractError,
 };
 
-pub const IBC_VERSION: &str = "counter-1";
+pub const IBC_VERSION: &str = "simple-ibc-callback";
 
 /// Handles the `OpenInit` and `OpenTry` parts of the IBC handshake.
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -66,6 +66,7 @@ pub fn ibc_packet_receive(
     // Regardless of if our processing of this packet works we need to
     // commit an ACK to the chain. As such, we wrap all handling logic
     // in a seprate function and on error write out an error ack.
+    println!("Received");
     match do_ibc_packet_receive(deps, env, msg) {
         Ok(response) => Ok(response),
         Err(error) => Ok(IbcReceiveResponse::new()
@@ -85,36 +86,54 @@ pub fn do_ibc_packet_receive(
     let msg: IbcExecuteMsg = from_binary(&msg.packet.data)?;
 
     match msg {
-        IbcExecuteMsg::Increment {} => execute_increment(deps, channel),
+        IbcExecuteMsg::Increment { callback } => execute_increment(deps, channel, callback),
     }
 }
 
 pub fn execute_increment(
     deps: DepsMut,
     channel: String,
+    callback: bool,
 ) -> Result<IbcReceiveResponse, ContractError> {
     let count = CONNECTION_COUNTS.update(deps.storage, channel, |count| -> StdResult<_> {
         Ok(count.unwrap_or_default() + 1)
     })?;
+    println!("{callback}");
     Ok(IbcReceiveResponse::new()
         .add_attribute("method", "execute_increment")
         .add_attribute("count", count.to_string())
-        .set_ack(make_ack_success()))
+        .set_ack(make_ack_success(count)))
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_packet_ack(
     _deps: DepsMut,
     _env: Env,
-    _ack: IbcPacketAckMsg,
+    ack: IbcPacketAckMsg,
 ) -> Result<IbcBasicResponse, ContractError> {
-    // Nothing to do here. We don't keep any state about the other
-    // chain, just deliver messages so nothing to update.
-    //
-    // If we did care about how the other chain received our message
-    // we could deserialize the data field into an `Ack` and inspect
-    // it.
-    Ok(IbcBasicResponse::new().add_attribute("method", "ibc_packet_ack"))
+    // write the logic for the callback if it's true
+    let res: Ack = from_slice(&ack.acknowledgement.data)?;
+    match res {
+      Ack::Result(_data) => {
+        let res = acknowledge_callback(_deps, _env, Option::Some("none".to_string()));
+        Ok(IbcBasicResponse::new())
+      }
+      Ack::Error(e) => Ok(IbcBasicResponse::new()
+        .add_attribute("ack", "failed")
+        .add_attribute("error",e)),
+    }
+}
+
+// receive PacketMsg::Dispatch response
+#[allow(clippy::unnecessary_wraps)]
+fn acknowledge_callback(
+  _deps: DepsMut,
+  _env: Env,
+  _requester: Option<String>,
+  //response:
+) -> Result<IbcBasicResponse, ContractError> {
+  println!("Succeeded to do a callback function");
+  Ok(IbcBasicResponse::new())
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
