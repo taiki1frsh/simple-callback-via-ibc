@@ -52,67 +52,21 @@ the contract it will be assigned a port. Ports identify a receiver on
 a blockchain in much the same way as ports identify applications on a
 computer.
 
-You can find the port that has been assigned to your contract by
-running `junod query wasm contract <ADDRESS>` and inspecting the
-`ibc_port_id` field. For example:
+## How to test
 
+```shell
+# run the local-osmosis chain
+# ./ci-scripts/osmosis/start.sh
+
+# run the local-wasmd chain
+# ./ci-scripts/wasmd/start.sh
+
+# build the wasm file and optimize by run this shell
+./compile_optimize.sh
+cp ./artifacts/cw_ibc_callback_example.wasm ./tests/testdata/
+# if you use apple silicon, cw_ibc_callback_example-aarch64.wasm 
+
+cd ./tests
+npm run build
+npm run test:unit
 ```
-$ junod query wasm contract juno1r8k4hf7umksu9w53u4sz0jsla5478am6yxr0mhkuvp00yvtmxexsj8wazt
-address: juno1r8k4hf7umksu9w53u4sz0jsla5478am6yxr0mhkuvp00yvtmxexsj8wazt
-contract_info:
-  admin: ""
-  code_id: "1377"
-  created: null
-  creator: juno1m7a7nva00p82xr0tssye052r8sxsxvcy2v5qz6
-  extension: null
-  ibc_port_id: wasm.juno1r8k4hf7umksu9w53u4sz0jsla5478am6yxr0mhkuvp00yvtmxexsj8wazt
-  label: ekez-cw-ibc-example
-```
-
-To establish a connecton between two contracts you will need to set
-up a relayer. If you chose to use
-[hermes](https://hermes.informal.systems), after configuration the
-command to establish a connection is:
-
-```
-hermes create channel --a-chain uni-3 --b-chain juno-1 --a-port wasm.juno1r8k4hf7umksu9w53u4sz0jsla5478am6yxr0mhkuvp00yvtmxexsj8wazt --b-port wasm.juno1fsay0zux2vkyrsqpepd08q2vlytrfu7gsqnapsfl9ge8mp6fvx3qf062q9 --channel-version counter-1
-```
-
-Then, to start the relayer:
-
-```
-hermes start
-```
-
-Note that you will need to [configure
-hermes](https://hermes.informal.systems/config.html) for the chains
-you are relaying between before these commands may be run.
-
-Once the relayer is running, make note of the channel ID that has been
-established. You will use this when telling the contract to send
-packets. This is needed because one contract may be connected to
-multiple channels. You can not assume that your channel is the only
-one connected at a given time.
-
-For example, to increment the count on the counterparty chain over a connection between local
-channel-72 and remote channel-90:
-
-```
-junod tx wasm execute juno1r8k4hf7umksu9w53u4sz0jsla5478am6yxr0mhkuvp00yvtmxexsj8wazt '{"increment": { "channel": "channel-72" }}' --from ekez --gas auto --gas-adjustment 2 --fees 12000ujunox
-```
-
-Then, switching to the other chain, we can query that count by
-running:
-
-```
-junod query wasm contract-state smart juno1fsay0zux2vkyrsqpepd08q2vlytrfu7gsqnapsfl9ge8mp6fvx3qf062q9 '{"get_count": {"channel": "channel-90"}}'
-```
-
-## Troubleshooting
-
-1. Packets may take over a minute to be relayed. If your packet is not
-   sent instantly it is probably OK. Feel free to take a break and
-   come back.
-2. Hermes will not pick up packets that were sent while it was not
-   running. Start your relayer and wait for the log line `Hermes has
-   started` before sending packets.
