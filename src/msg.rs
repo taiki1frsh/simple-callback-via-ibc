@@ -11,6 +11,7 @@ pub enum ExecuteMsg {
       channel: String,
       callback: bool,
     },
+    FirstIncrementCallback{},
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, JsonSchema)]
@@ -25,7 +26,7 @@ pub enum QueryMsg {
     // GetCount returns the current count as a json-encoded number
     GetCount {
         // The ID of the channel you'd like to query the count for.
-        channel: String,
+        count: String,
     },
 }
 

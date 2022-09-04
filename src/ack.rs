@@ -11,12 +11,23 @@ pub enum Ack {
     Error(String),
 }
 
-pub fn make_ack_success(count: u32) -> Binary {
-    let res = Ack::Result(to_binary(&count).unwrap());
+pub fn make_ack_success(count: u32, callback: bool) -> Binary {
+    let ack = IncrementMsgAcknowledgement{
+      count: count,
+      callback: callback,
+    };
+    let res = Ack::Result(to_binary(&ack).unwrap());
     to_binary(&res).unwrap()
 }
 
 pub fn make_ack_fail(err: String) -> Binary {
     let res = Ack::Error(err);
     to_binary(&res).unwrap()
+}
+
+/// Return the data field for each message
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
+pub struct IncrementMsgAcknowledgement {
+    pub count: u32,
+    pub callback: bool,
 }

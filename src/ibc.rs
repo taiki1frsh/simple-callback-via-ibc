@@ -7,11 +7,11 @@ use cosmwasm_std::{
 };
 
 use crate::{
-    ack::{make_ack_fail, make_ack_success, Ack},
+    ack::{make_ack_fail, make_ack_success, Ack, IncrementMsgAcknowledgement},
     error::Never,
     msg::IbcExecuteMsg,
-    state::CONNECTION_COUNTS,
-    ContractError,
+    state::{CONNECTION_COUNTS, CALLBACK_COUNTER},
+    ContractError, callback::build_callback,
 };
 
 pub const IBC_VERSION: &str = "simple-ibc-callback";
@@ -98,26 +98,39 @@ pub fn execute_increment(
     let count = CONNECTION_COUNTS.update(deps.storage, channel, |count| -> StdResult<_> {
         Ok(count.unwrap_or_default() + 1)
     })?;
-    println!("{callback}");
+    let ack = make_ack_success(count, callback);
+
     Ok(IbcReceiveResponse::new()
         .add_attribute("method", "execute_increment")
         .add_attribute("count", count.to_string())
-        .set_ack(make_ack_success(count)))
+        .set_ack(ack)
+    )
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn ibc_packet_ack(
     deps: DepsMut,
-    _env: Env,
+    env: Env,
     ack: IbcPacketAckMsg,
 ) -> Result<IbcBasicResponse, ContractError> {
     // write the logic for the callback if it's true
     let res: Ack = from_slice(&ack.acknowledgement.data)?;
     match res {
-      Ack::Result(_data) => {
-        let _ = acknowledge_callback(deps, _env, ack.original_packet.src.channel_id, Option::Some("none".to_string()))?;
+      Ack::Result(data) => {
+        let content: IncrementMsgAcknowledgement = from_binary(&data)?;
+        let mut res = IbcBasicResponse::new().add_attribute("ack", "success");
 
-        Ok(IbcBasicResponse::new())
+        // do callback operation if the `callback` value is true
+        if content.callback {
+          // you can just implement the function that you want to execute as a callback fn directorty
+          _ = execute_acknowledge_callback(deps)?;
+
+          // or you can build the msg to be executed as callback msg
+          // I think this way is the way
+          res = res.add_message(build_callback(content.count, env.contract.address.into_string())?);
+        }
+
+        Ok(res)
       }
       Ack::Error(e) => Ok(IbcBasicResponse::new()
         .add_attribute("ack", "failed")
@@ -127,21 +140,17 @@ pub fn ibc_packet_ack(
 
 // receive PacketMsg::Dispatch response
 #[allow(clippy::unnecessary_wraps)]
-fn acknowledge_callback(
+fn execute_acknowledge_callback(
   deps: DepsMut,
-  _env: Env,
-  channel: String,
-  _requester: Option<String>,
-  //response:
+  // _env: Env,
 ) -> Result<IbcBasicResponse, ContractError> {
   println!("Succeeded to do a callback function");
-  let count = CONNECTION_COUNTS.update(deps.storage, channel.clone(), |count| -> StdResult<_> {
-    Ok(count.unwrap_or_default() + 10)
+  let count = CONNECTION_COUNTS.update(deps.storage, CALLBACK_COUNTER.to_string(), |count| -> StdResult<_> {
+    Ok(count.unwrap_or_default() + 1)
   })?;
 
   Ok(IbcBasicResponse::new()
     .add_attribute("count", count.to_string())
-    .add_attribute("channel", channel)
   )
 }
 
