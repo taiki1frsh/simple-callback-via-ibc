@@ -6,7 +6,12 @@
 
 export type ExecuteMsg = {
   increment: {
+    callback: boolean;
     channel: string;
+    [k: string]: unknown;
+  };
+} | {
+  first_increment_callback: {
     [k: string]: unknown;
   };
 };
@@ -16,6 +21,7 @@ export interface GetCountResponse {
 }
 export type IbcExecuteMsg = {
   increment: {
+    callback: boolean;
     [k: string]: unknown;
   };
 };
@@ -24,7 +30,7 @@ export interface InstantiateMsg {
 }
 export type QueryMsg = {
   get_count: {
-    channel: string;
+    count: string;
     [k: string]: unknown;
   };
 };

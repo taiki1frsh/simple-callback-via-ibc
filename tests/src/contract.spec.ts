@@ -16,7 +16,7 @@ const {
 const osmosis = { ...oldOsmo, minFee: "0uosmo" };
 
 import {
-  assertPacketsFromA,
+  // assertPacketsFromA,
   IbcVersion,
   // parseAcknowledgementSuccess,
   setupContracts,
@@ -24,6 +24,7 @@ import {
   setupWasmClient,
   // setupContractClient,
   parseAcknowledgementSuccess,
+  CallbackCounter,
 } from "./utils";
 
 let wasmIds: Record<string, number> = {};
@@ -67,7 +68,6 @@ test.serial("set up channel with contract", async (t) => {
   const { ibcPortId: Port } = await wasmClient.sign.getContract(wasm);
   t.log(`Wasm Port: ${Port}`);
   assert(Port);
-
 
   // construct contract client
   const initContractOsmo = {};
@@ -143,45 +143,37 @@ async function demoSetup(): Promise<SetupInfo> {
 test.serial("connect channel and increment", async (t) => {
   const {
     wasmClient,
-    osmoClient,
+    // osmoClient,
     wasmContr,
-    osmoContr,
+    // osmoContr,
     link,
     channelPair,
   } = await demoSetup();
 
   // const contractClient = await setupContractClient(wasmContr);
 
-    // increment counter in dst chain
+  // increment counter in dst chain
   let executemsg: ExecuteMsg = { increment: { channel: channelPair.dest.channelId, callback: true } };
-  let execRes = await wasmClient.sign.execute(wasmClient.senderAddress, wasmContr, executemsg, "auto");
+  await wasmClient.sign.execute(wasmClient.senderAddress, wasmContr, executemsg, "auto");
 
   // relay packets
   let info = await link.relayAll();
   let contractData = parseAcknowledgementSuccess(info.acksFromB[0]);
-  console.debug(contractData)
 
-  const queryDestMsg: QueryMsg = { get_count: { channel: channelPair.dest.channelId } };
-  let queryRes = await osmoClient.sign.queryContractSmart(osmoContr, queryDestMsg);
+  const queryDestMsg: QueryMsg = { get_count: { count: CallbackCounter } };
+  let queryRes = await wasmClient.sign.queryContractSmart(wasmContr, queryDestMsg);
   // console.debug(res);
-  assert(queryRes.count == 1, `expected 1, got ${queryRes.count}`)
+  assert(queryRes.count == 2, `expected 2, got ${queryRes.count}`)
 
   // execute and get result again
-  execRes = await wasmClient.sign.execute(wasmClient.senderAddress, wasmContr, executemsg, "auto");
+  await wasmClient.sign.execute(wasmClient.senderAddress, wasmContr, executemsg, "auto");
   info = await link.relayAll();
   contractData = parseAcknowledgementSuccess(info.acksFromB[0]);
   console.debug(contractData)
 
-  queryRes = await osmoClient.sign.queryContractSmart(osmoContr, queryDestMsg);
-  // console.debug(res);
-  assert(queryRes.count == 2, `expected 2, got ${queryRes.count}`)
-
-
-  // query wasm count to check if callback worked
-  const querySrcMsg: QueryMsg = { get_count: { channel: channelPair.src.channelId } };
-  queryRes = await wasmClient.sign.queryContractSmart(wasmContr, querySrcMsg);
-  // console.debug(res);
-  assert(queryRes.count == 20, `expected 20, got ${queryRes.count}`)
+  queryRes = await wasmClient.sign.queryContractSmart(wasmContr, queryDestMsg);
+  console.debug(queryRes);
+  assert(queryRes.count == 4, `expected 4, got ${queryRes.count}`)
 
   t.pass("")
 });

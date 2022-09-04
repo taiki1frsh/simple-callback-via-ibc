@@ -16,6 +16,7 @@ const { fundAccount, generateMnemonic, osmosis: oldOsmo, signingCosmWasmClient, 
 const osmosis = { ...oldOsmo, minFee: "0.025uosmo" };
 
 export const IbcVersion = "simple-ibc-callback";
+export const CallbackCounter = "callback_counter";
 
 export async function setupContracts(
   cosmwasm: CosmWasmSigner,

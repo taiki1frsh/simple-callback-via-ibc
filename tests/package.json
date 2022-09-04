@@ -16,8 +16,7 @@
     "test": "run-s build test:*",
     "test:lint": "eslint src --ext .ts",
     "test:prettier": "prettier \"**/*.{ts,md}\" --list-different",
-    "test:unit": "tmux new -s osmosis -d ../ci-scripts/osmosis/start.sh && tmux new -s wasmd -d ../ci-scripts/wasmd/start.sh && nyc --silent ava --serial",
-    "unit": "nyc --silent ava --serial"
+    "test:unit": "nyc --silent ava --serial"
   },
   "dependencies": {
     "@confio/relayer": "^0.5.1"
