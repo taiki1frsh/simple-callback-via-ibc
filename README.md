@@ -70,3 +70,8 @@ cd ./tests
 npm run build
 npm run test:unit
 ```
+
+## Reference
+
+The well-written ibc-enabled contract for ICA - https://github.com/confio/osmo-oracle
+This repo also has unit tests in the contract code for ibc features.
