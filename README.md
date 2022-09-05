@@ -1,9 +1,10 @@
 # CosmWasm IBC Example
 
-This is a simple IBC enabled CosmWasm smart contract. It expects to be
-deployed on two chains and, when prompted, will send messages to its
+This is a simple IBC enabled CosmWasm smart contract with the callback function for IBC transactions. It expects to be deployed on two chains and, when prompted, will send messages to its
 counterpart. It then counts the number of times messages have been
-received on both sides.
+received on both sides and also, when the source chain gets the ack-packet, some callback function (msgs) is executed on that chain if the `callback` value is set `true` in the send-packet.   
+The reason why this callback msg execution is valid is simply because ack process is the same as send process. In the process to produce ack-packet and passing back that packet to the source chain, there doesn't occur any illegal state-modification as ibc intends so. Hence, I believe it's effective way to realize ibc-transaction callback mechanism.
+
 
 At a high level, to use this contract:
 
@@ -12,8 +13,9 @@ At a high level, to use this contract:
 2. Configure and run a relayer to connect the two contracts.
 3. Execute the `Increment {}` method on one contract to increment the
    send a message and increment the count on the other one.
-4. Use the `GetCount { connection }` query to determine the message
-   count for a given connection.
+4. Use the `GetCount { connection }` query to check callback function worked as intended
+
+Don't worry, I just wrote the test codes to check these features. Please see the [How to test section.](https://github.com/taiki1frsy/simple-ibc-callback/blob/main/README.md#how-to-test)
 
 ## Background
 

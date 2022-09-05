@@ -1,1 +1,0 @@
-d5a69ecc404c2be9770f917163d4f959000e532904e3a9b0f2bbdac5d243218b  ./target/wasm32-unknown-unknown/release/cw_ibc_callback_example.wasm
