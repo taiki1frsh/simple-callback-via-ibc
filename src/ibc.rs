@@ -122,6 +122,13 @@ pub fn ibc_packet_ack(
 
         // do callback operation if the `callback` value is true
         if content.callback {
+          // you can additionally insert the condition to trigger a callback msg
+          // e.g.
+          // if content.count == 1 {
+          //   // trigger specific msg for this case
+          //   res.add_message(build_callback_first(...))
+          // }
+
           // you can just implement the function that you want to execute as a callback fn directorty
           _ = execute_acknowledge_callback(deps)?;
 
