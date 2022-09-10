@@ -3,9 +3,9 @@ use std::fs::create_dir_all;
 
 use cosmwasm_schema::{export_schema, remove_schemas, schema_for};
 
-use cw_ibc_callback_example::msg::{
+use cw_ibc_callback_example::{msg::{
     ExecuteMsg, GetCountResponse, IbcExecuteMsg, InstantiateMsg, QueryMsg,
-};
+}, ack::IncrementMsgAcknowledgement};
 
 fn main() {
     let mut out_dir = current_dir().unwrap();
@@ -18,4 +18,5 @@ fn main() {
     export_schema(&schema_for!(QueryMsg), &out_dir);
     export_schema(&schema_for!(IbcExecuteMsg), &out_dir);
     export_schema(&schema_for!(GetCountResponse), &out_dir);
+    export_schema(&schema_for!(IncrementMsgAcknowledgement), &out_dir);
 }

@@ -3,6 +3,9 @@
 # compile contract to wasm binaryies
 cargo wasm
 
+# generate schema json
+cargo schema
+
 # optimize wasm
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
