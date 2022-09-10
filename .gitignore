@@ -25,3 +25,5 @@ artifacts
 Build
 
 .nyc_output
+
+testdata

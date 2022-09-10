@@ -25,6 +25,11 @@ export type IbcExecuteMsg = {
     [k: string]: unknown;
   };
 };
+export interface IncrementMsgAcknowledgement {
+  callback: boolean;
+  count: number;
+  [k: string]: unknown;
+}
 export interface InstantiateMsg {
   [k: string]: unknown;
 }

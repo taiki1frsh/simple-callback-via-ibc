@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { ExecuteMsg, GetCountResponse, IbcExecuteMsg, InstantiateMsg, QueryMsg } from "./SimpleIbcCallback.types";
+import { ExecuteMsg, GetCountResponse, IbcExecuteMsg, IncrementMsgAcknowledgement, InstantiateMsg, QueryMsg } from "./SimpleIbcCallback.types";
 export interface SimpleIbcCallbackReadOnlyInterface {
   contractAddress: string;
   getCount: ({

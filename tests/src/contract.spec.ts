@@ -3,7 +3,7 @@ import { ChannelPair } from "@confio/relayer/build/lib/link";
 import { assert } from "@cosmjs/utils";
 import test from "ava";
 import { Order } from "cosmjs-types/ibc/core/channel/v1/channel";
-import {ExecuteMsg, QueryMsg} from "./SimpleIbcCallback.types";
+import {ExecuteMsg, QueryMsg, IncrementMsgAcknowledgement} from "./SimpleIbcCallback.types";
 
 const {
   osmosis: oldOsmo,
@@ -132,7 +132,7 @@ async function demoSetup(): Promise<SetupInfo> {
   };
 }
 
-test.serial("connect channel and increment", async (t) => {
+test.serial("connect channel , execute increment and does callback via ibc", async (t) => {
   const {
     wasmClient,
     wasmContr,
@@ -145,21 +145,44 @@ test.serial("connect channel and increment", async (t) => {
 
   // relay packets
   let info = await link.relayAll();
-  let contractData = parseAcknowledgementSuccess(info.acksFromB[0]);
+  let ackData: IncrementMsgAcknowledgement = parseAcknowledgementSuccess(info.acksFromB[0]);
+  t.assert(true == ackData.callback, "expected true for a callback varieble");
 
   const queryDestMsg: QueryMsg = { get_count: { count: CallbackCounter } };
   let queryRes = await wasmClient.sign.queryContractSmart(wasmContr, queryDestMsg);
-  assert(queryRes.count == 2, `expected 2, got ${queryRes.count}`)
+  t.assert(queryRes.count == 2, `expected 2, got ${queryRes.count}`)
 
   // execute and get result again
   await wasmClient.sign.execute(wasmClient.senderAddress, wasmContr, executemsg, "auto");
   info = await link.relayAll();
-  contractData = parseAcknowledgementSuccess(info.acksFromB[0]);
-  console.debug(contractData)
+  parseAcknowledgementSuccess(info.acksFromB[0]);
 
   queryRes = await wasmClient.sign.queryContractSmart(wasmContr, queryDestMsg);
-  console.debug(queryRes);
-  assert(queryRes.count == 4, `expected 4, got ${queryRes.count}`)
+  t.assert(queryRes.count == 4, `expected 4, got ${queryRes.count}`)
+
+  t.pass("")
+});
+
+test.serial("increment and doesn't do callback via ibc", async (t) => {
+  const {
+    wasmClient,
+    wasmContr,
+    link,
+    channelPair,
+  } = await demoSetup();
+  // increment counter in dst chain
+  let executemsg: ExecuteMsg = { increment: { channel: channelPair.dest.channelId, callback: false } };
+  await wasmClient.sign.execute(wasmClient.senderAddress, wasmContr, executemsg, "auto");
+
+  // relay packets
+  let info = await link.relayAll();
+  let ackData: IncrementMsgAcknowledgement = parseAcknowledgementSuccess(info.acksFromB[0]);
+  console.log(ackData)
+  t.assert(false == ackData.callback, "expected to be false for callback variable");
+
+  const queryDestMsg: QueryMsg = { get_count: { count: CallbackCounter } };
+  let queryRes = await wasmClient.sign.queryContractSmart(wasmContr, queryDestMsg);
+  t.assert(queryRes.count == 0, `expected 0, got ${queryRes.count}`)
 
   t.pass("")
 });
