@@ -12,6 +12,8 @@ pub enum ExecuteMsg {
       callback: bool,
     },
     FirstIncrementCallback{},
+    // or you can explicitly disclaim
+    // Receive(Callback{})
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, JsonSchema)]
